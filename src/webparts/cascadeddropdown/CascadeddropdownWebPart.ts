@@ -120,7 +120,7 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
                   options: this.listOptions
                 }),
                 PropertyPaneDropdown('selectedItem', {
-                  label: `Please select list`,
+                  label: `Please select Item`,
                   options: this.itemOptions
                 })
               ]
