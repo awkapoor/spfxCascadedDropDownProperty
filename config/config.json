@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "cascadeddropdown-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/cascadeddropdown/CascadeddropdownWebPart.js",
+          "manifest": "./src/webparts/cascadeddropdown/CascadeddropdownWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "CascadeddropdownWebPartStrings": "lib/webparts/cascadeddropdown/loc/{locale}.js"
+  }
+}

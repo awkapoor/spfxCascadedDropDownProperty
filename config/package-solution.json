@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "cascaded-drop-down-client-side-solution",
+    "id": "22af1ca9-9ac4-4d3f-8aeb-bb6f01c763dc",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "isDomainIsolated": false
+  },
+  "paths": {
+    "zippedPackage": "solution/cascaded-drop-down.sppkg"
+  }
+}
