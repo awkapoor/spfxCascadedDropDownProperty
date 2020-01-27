@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
-import { BaseClientSideWebPart, PropertyPaneDropdown } from '@microsoft/sp-webpart-base';
+import { BaseClientSideWebPart, PropertyPaneDropdown, IPropertyPaneAccessor } from '@microsoft/sp-webpart-base';
 import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField,
@@ -43,11 +43,17 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
   }
 
   protected onPropertyPaneConfigurationStart(): void {
-    this.getAllLists().then((allLists) => {
-      this.listOptions = allLists;
-      this.render();
-      this.context.propertyPane.refresh();
-    })
+    if(this.listOptions.length === 0) {
+      this.getAllLists().then((allLists) => {
+        this.listOptions = allLists;
+        this.context.propertyPane.refresh();
+        return this.getItems();
+      }).then((itemOptions : IPropertyPaneDropdownOption[]) => {
+        this.itemOptions = itemOptions;
+        this.context.propertyPane.refresh();
+        this.render();
+      });
+    }
   }
 
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
@@ -67,7 +73,7 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
     return sp.web.lists.getById(this.properties.selectedList).items.get().then((listItems) => {
       listItems.forEach(item => {
         itemOptions.push({
-          key: item.Id,
+          key: `${item.Id}#${item.Title}`,
           text: item.Title
         });
       });
