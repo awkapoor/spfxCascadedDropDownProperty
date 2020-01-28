@@ -12,7 +12,7 @@ import * as strings from 'CascadeddropdownWebPartStrings';
 import Cascadeddropdown from './components/Cascadeddropdown';
 import { ICascadeddropdownProps } from './components/ICascadeddropdownProps';
 import { IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
-import { sp } from "@pnp/sp/presets/all";
+import { SPOperations } from './service/SPOperations';
 
 
 export interface ICascadeddropdownWebPartProps {
@@ -25,7 +25,9 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
 
   private listOptions: IPropertyPaneDropdownOption[] = [];
   private itemOptions: IPropertyPaneDropdownOption[] = [];
+  private oSPOperations : SPOperations;
   public render(): void {
+    this.oSPOperations = new SPOperations();
     if (!this.context.propertyPane.isPropertyPaneOpen() && this.properties.selectedList === undefined) {
       this.context.propertyPane.open();
     }
@@ -43,12 +45,12 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
   }
 
   protected onPropertyPaneConfigurationStart(): void {
-    if(this.listOptions.length === 0) {
+    if (this.listOptions.length === 0) {
       this.getAllLists().then((allLists) => {
         this.listOptions = allLists;
         this.context.propertyPane.refresh();
         return this.getItems();
-      }).then((itemOptions : IPropertyPaneDropdownOption[]) => {
+      }).then((itemOptions: IPropertyPaneDropdownOption[]) => {
         this.itemOptions = itemOptions;
         this.context.propertyPane.refresh();
         this.render();
@@ -70,8 +72,9 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
 
   private getItems(): Promise<IPropertyPaneDropdownOption[]> {
     let itemOptions: IPropertyPaneDropdownOption[] = [];
-    return sp.web.lists.getById(this.properties.selectedList).items.get().then((listItems) => {
-      listItems.forEach(item => {
+
+    return this.oSPOperations.getOperations(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbyid('${this.properties.selectedList}')/items?$select=Id,Title`, this.context.spHttpClient).then((listItems) => {
+      listItems.result.results.forEach(item => {
         itemOptions.push({
           key: `${item.Id}#${item.Title}`,
           text: item.Title
@@ -85,8 +88,8 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
   private getAllLists(): Promise<IPropertyPaneDropdownOption[]> {
     let listOptions: IPropertyPaneDropdownOption[] = [];
     try {
-      return sp.web.lists.filter(`Hidden eq false`).get().then((allLists) => {
-        allLists.forEach(list => {
+      return this.oSPOperations.getOperations(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Id,Title&$filter=hidden eq false`, this.context.spHttpClient).then((allLists) => {
+        allLists.result.results.forEach(list => {
           listOptions.push({
             key: list.Id,
             text: list.Title
@@ -98,6 +101,7 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
       console.error(error);
     }
   }
+
 
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
