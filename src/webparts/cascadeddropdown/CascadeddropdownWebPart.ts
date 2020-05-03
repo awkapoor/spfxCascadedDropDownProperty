@@ -82,7 +82,7 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
       });
 
       return Promise.resolve(itemOptions);
-    })
+    });
   }
 
   private getAllLists(): Promise<IPropertyPaneDropdownOption[]> {
