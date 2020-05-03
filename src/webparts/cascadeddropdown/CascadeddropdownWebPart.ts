@@ -70,9 +70,11 @@ export default class CascadeddropdownWebPart extends BaseClientSideWebPart<ICasc
     }
   }
 
+  /**
+   * function to get items from list
+   */
   private getItems(): Promise<IPropertyPaneDropdownOption[]> {
     let itemOptions: IPropertyPaneDropdownOption[] = [];
-
     return this.oSPOperations.getOperations(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbyid('${this.properties.selectedList}')/items?$select=Id,Title`, this.context.spHttpClient).then((listItems) => {
       listItems.result.results.forEach(item => {
         itemOptions.push({
